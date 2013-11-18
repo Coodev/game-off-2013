@@ -14,7 +14,10 @@ https://github.com/cocos2d/cocos2d-html5/
 The bulk of the coding was made on the open source editor Scripted:
 https://github.com/scripted-editor/scripted
 
-The graphics were made with Paint.Net and Inkscape:
+And quick-fixes and lookups (as well as on-the-run coding) was done with Notepad++:
+http://notepad-plus-plus.org/
+
+The graphics were made with Paint.Net and Inkscape (albeit my poor graphic skills don't do them justice):
 http://www.getpaint.net/
 http://inkscape.org/
 
