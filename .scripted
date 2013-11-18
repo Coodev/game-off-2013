@@ -1,0 +1,11 @@
+{
+	"ui": {
+    "font_size":18,
+  },
+  
+	"jshint": {
+	  	"options": {
+	    	"browser": false
+	  	}
+	},
+}
