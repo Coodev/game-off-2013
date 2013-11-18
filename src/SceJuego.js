@@ -27,6 +27,7 @@ LA.Capas.LayJuego = cc.Layer.extend({
 	_ultimo:null,
 	_movidas:null,
 	_inicio:null,
+	_controles:{w:null, a:null, s:null, d:null},
 
     init:function () {
         var eso = this;
@@ -37,6 +38,8 @@ LA.Capas.LayJuego = cc.Layer.extend({
 		this.initControles();
 		
         this.setTouchEnabled(true);
+        
+        this.setKeyboardEnabled(true);//TODO: ver si da problemas el no verificar que el dispositivo soporte teclado antes de activar
         
         return true;
     },
@@ -61,15 +64,12 @@ LA.Capas.LayJuego = cc.Layer.extend({
 
 		var ogPersonaje = this._mapa.getObjectGroup("personaje");
 		var spawn = ogPersonaje.objectNamed("spawn");
-		//var x= this._inicio.x + spawn.x;
-		//var y= this._inicio.y + spawn.y;
 		var x= spawn.x;
 		var y= spawn.y;
 
 		this._personaje = cc.Sprite.create(s_res.imgPersonaje);		 
 		this._personaje.setPosition(cc.p(x,y));
 		this._personaje.setAnchorPoint(cc.p(0.5,0.5));
-		//this.addChild(this._personaje, 1);
 		this._mapa.addChild(this._personaje, 1);
     },
     
@@ -98,12 +98,7 @@ LA.Capas.LayJuego = cc.Layer.extend({
 					this.moverPersonaje(posicion);
 			    }
 
-				if(eso._ultimo===null){
-					eso._ultimo=this.btnArriba; //este botón
-				}else{
-					//swappeamos de lugar este botón y el anterior presionado
-					this.swappear(this.btnArriba);
-				}
+				this.swappear(this.btnArriba);	
 			},
 			
 			this
@@ -128,12 +123,7 @@ LA.Capas.LayJuego = cc.Layer.extend({
 					this.moverPersonaje(posicion);
 			    }
 				
-				if(eso._ultimo===null){
-					eso._ultimo=this.btnAbajo; //este botón
-				}else{
-					//swappeamos de lugar este botón y el anterior presionado
-					this.swappear(this.btnAbajo);
-				}
+				this.swappear(this.btnAbajo);
 			},
 			
 			this
@@ -158,12 +148,7 @@ LA.Capas.LayJuego = cc.Layer.extend({
 					this.moverPersonaje(posicion);
 			    }
 				
-				if(eso._ultimo===null){
-					eso._ultimo=this.btnDerecha; //este botón
-				}else{
-					//swappeamos de lugar este botón y el anterior presionado
-					this.swappear(this.btnDerecha);
-				}
+				this.swappear(this.btnDerecha);
 			},
 			
 			this
@@ -188,13 +173,7 @@ LA.Capas.LayJuego = cc.Layer.extend({
 					this.moverPersonaje(posicion);	        
 			    }
 
-				
-				if(eso._ultimo===null){
-					eso._ultimo=this.btnIzquierda; //este botón
-				}else{
-					//swappeamos de lugar este botón y el anterior presionado
-					this.swappear(this.btnIzquierda);
-				}
+				this.swappear(this.btnIzquierda);
 			},
 			
 			this
@@ -212,19 +191,24 @@ LA.Capas.LayJuego = cc.Layer.extend({
 		this.btnAbajo.setPosition(cc.p(66, 1));
 		this.btnDerecha.setPosition(cc.p(131, 1));
 		this.btnIzquierda.setPosition(cc.p(1, 1));
-
+		
 		this._ultimo = null;
+		
+		this.btnArriba.slot=cc.KEY.w;
+		this.btnAbajo.slot=cc.KEY.s;
+		this.btnDerecha.slot=cc.KEY.d;
+		this.btnIzquierda.slot=cc.KEY.a;
+		
     },
     
     getCoord:function(posicion){
 		var x = Math.floor((posicion.x)/this._mapa.getTileSize().width);
 		var y = Math.floor((this._mapa.getMapSize().height * this._mapa.getTileSize().height - posicion.y-1)/this._mapa.getTileSize().height);//Hace falta "darlo vuelta" porque el (0,0) del tiled está arriba
-		cc.log("MapaX:"+x+"; MapaY:"+y);
 	    return cc.p(x, y);
     },
     
     moverPersonaje:function(posicion){
-	    if(!this._paredes.getTileGIDAt(this.getCoord(posicion))){//si no hay nada en la capa paredes en es posición:1
+	    if(!this._paredes.getTileGIDAt(this.getCoord(posicion))){//si no hay nada en la capa paredes en esa posición, podemos movernos allí
 				this._personaje.setPosition(posicion);
 				
 				if(this._portal.getTileGIDAt(this.getCoord(posicion))){
@@ -273,10 +257,11 @@ LA.Capas.LayJuego = cc.Layer.extend({
 					this._mapa.removeAllChildren(true);
 					this._mapa.removeFromParent(true);
 					this._personaje.removeFromParent(true);
+					
 					if(LA.nivelActual<s_res.arrNiveles.length-1){
-						LA.nivelActual++;
-						this.initTiledMap(s_res.arrNiveles[LA.nivelActual]);
 						this.resetearControles();
+						LA.nivelActual++;
+						this.initTiledMap(s_res.arrNiveles[LA.nivelActual]);						
 						//TODO: aplicar alguna transición?
 					}else{
 						//TODO: mostrar escena final
@@ -288,11 +273,59 @@ LA.Capas.LayJuego = cc.Layer.extend({
     },
     
     swappear:function(boton){
-		var temp = boton.getPosition();
-		boton.runAction(cc.MoveTo.create(0.2, this._ultimo.getPosition()));
-		this._ultimo.runAction(cc.MoveTo.create(0.2, temp));
-		this._ultimo=boton; //este botón
-    }
+		if(this._ultimo===null){
+			this._ultimo=boton;
+		}else{
+			//swappeamos las teclas asignadas a los botones
+			var temp = boton.slot;
+			boton.slot= this._ultimo.slot;
+			this._ultimo.slot = temp;
+			
+			//swappeamos de lugar este botón y el anterior presionado
+			temp = boton.getPosition();
+			boton.runAction(cc.MoveTo.create(0.2, this._ultimo.getPosition()));//TODO: solucionar caso en que si se presiona una dirección mientras su botón se está moviendo se toma esa posición en lugar de la final T_T
+			this._ultimo.runAction(cc.MoveTo.create(0.2, temp));
+			this._ultimo=boton;
+		}
+    },
+    
+    onKeyUp:function (tecla) {
+        switch(tecla){
+			case cc.KEY.up:
+				tecla = cc.KEY.w;					
+				break;
+				
+			case cc.KEY.down:
+				tecla = cc.KEY.s;					
+				break;
+				
+			case cc.KEY.right:
+				tecla = cc.KEY.d;					
+				break;
+				
+			case cc.KEY.left:
+				tecla = cc.KEY.a;					
+				break;
+		}
+		
+		switch(tecla){
+			case this.btnArriba.slot:
+					this.btnArriba.activate();
+				break;
+				
+			case this.btnAbajo.slot:
+					this.btnAbajo.activate();
+				break;
+				
+			case this.btnDerecha.slot:
+					this.btnDerecha.activate();
+				break;
+				
+			case this.btnIzquierda.slot:
+					this.btnIzquierda.activate();
+				break;
+		}
+	}
 });
 
 LA.Escenas.SceJuego = cc.Scene.extend({
