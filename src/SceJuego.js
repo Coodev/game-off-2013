@@ -213,12 +213,8 @@ LA.Capas.LayJuego = cc.Layer.extend({
 				
 				if(this._portal.getTileGIDAt(this.getCoord(posicion))){
 					//var optimo = this._mapa.getProperty("optimo");
-					var optimo;
-					switch(LA.nivelActual){
-						case 0:
-							optimo= 9;
-							break;
-						
+					var optimo; //TODO: estar atento a cuando arreglen esto
+					switch(LA.nivelActual){						
 						case 1:
 							optimo= 5;
 							break;
@@ -232,11 +228,28 @@ LA.Capas.LayJuego = cc.Layer.extend({
 							break;
 						
 						case 4:
-							optimo= 12;
+							optimo= 9;
 							break;
 							
-						default:
-							optimo= 1;
+						case 5:
+							optimo= 15;
+							break;
+							
+						case 6:
+							optimo= 19;
+							break;
+							
+						case 7:
+							optimo= 43;
+							break;
+							
+						case 8:
+							optimo= 29;
+							break;
+							
+						case 9:
+							optimo= 75;
+							break;
 					}
 					var iEstrellas = Math.floor((optimo/this._movidas)*5);
 					var estrellas = "";
@@ -332,7 +345,7 @@ LA.Escenas.SceJuego = cc.Scene.extend({
     onEnter:function () {
         this._super();
         
-        LA.size = cc.Director.getInstance().getWinSize();
+        LA.size = cc.Director.getInstance().getWinSize();//TODO: verificar si no debería estar usando Design Resolution Size en realidad..
         LA.cw = LA.size.width/2;
         LA.ch = LA.size.height/2;
         

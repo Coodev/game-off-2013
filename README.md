@@ -17,13 +17,16 @@ https://github.com/scripted-editor/scripted
 And quick-fixes and lookups (as well as on-the-run coding) was done with Notepad++:
 http://notepad-plus-plus.org/
 
-The graphics were made with Paint.Net and Inkscape (albeit my poor graphic skills don't do them justice):
+The graphics were made by hand by me and scanned and edited with Paint.Net and Inkscape (albeit my poor graphic skills don't do either software justice):
 http://www.getpaint.net/
 http://inkscape.org/
 
-Maps were edited with Tiled:
+The best mazes/labyrinths were generated with mazegenerator:
+http://www.mazegenerator.net/
+
+And then the actual tilemaps were edited with Tiled:
 http://www.mapeditor.org/
 
 Thanks for your time!
 
-PS: any and all feedback is of course appreciated on @ZippoLag :D
+PS: any and all feedback is of course appreciated @ZippoLag :D

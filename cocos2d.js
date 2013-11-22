@@ -21,7 +21,6 @@
         //SingleEngineFile:'',
         appFiles:[
             'src/resource.js',
-            /*'src/TmxNivel0.js',*/
             /*'src/SceFin.js',*/
             'src/SceJuego.js'/*,
             'src/SceInicial.js'*/

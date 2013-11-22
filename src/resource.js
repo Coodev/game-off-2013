@@ -27,6 +27,21 @@ g_res.push({type:"tmx", src:s_res.arrNiveles[3]});
 s_res.arrNiveles.push("nivel04.tmx");
 g_res.push({type:"tmx", src:s_res.arrNiveles[4]});
 
+s_res.arrNiveles.push("nivel05.tmx");
+g_res.push({type:"tmx", src:s_res.arrNiveles[5]});
+
+s_res.arrNiveles.push("nivel06.tmx");
+g_res.push({type:"tmx", src:s_res.arrNiveles[6]});
+
+s_res.arrNiveles.push("nivel07.tmx");
+g_res.push({type:"tmx", src:s_res.arrNiveles[7]});
+
+s_res.arrNiveles.push("nivel08.tmx");
+g_res.push({type:"tmx", src:s_res.arrNiveles[8]});
+
+s_res.arrNiveles.push("nivel09.tmx");
+g_res.push({type:"tmx", src:s_res.arrNiveles[9]});
+
 //Elementos del Mapa:
 s_res.imgPiso = "piso.png";
 g_res.push({type:"image", src:s_res.imgPiso});
