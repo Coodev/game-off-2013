@@ -18,15 +18,11 @@ var delay = 0.01;
 
 LA.Capas.LayJuego = cc.Layer.extend({
 	_mapa:null,
-	_escalaMapa:null,
-	_anchoEscalado:null,
-	_altoEscalado:null,
 	_paredes:null,
 	_portal:null,
 	_personaje:null,
 	_ultimo:null,
 	_movidas:null,
-	_inicio:null,
 	_controles:{w:null, a:null, s:null, d:null},
 
     init:function () {
@@ -44,21 +40,60 @@ LA.Capas.LayJuego = cc.Layer.extend({
         return true;
     },
     
-    initTiledMap:function(rutaMapa){
-		this._movidas=0;
-
+    initTiledMap:function(rutaMapa, rectanguloVisor){
+		this._movidas=0; //importante..
+		
+		//creamos el mapa
 		this._mapa= cc.TMXTiledMap.create(rutaMapa);
-		this.addChild(this._mapa, 0);
+		//this.addChild(this._mapa, 0);
 		this._mapa.setAnchorPoint(cc.p(0,0));
 		//this._mapa.setAnchorPoint(cc.p(0.5,0.5));
 		//this._mapa.setPosition(cc.p(0,0));
-		this._inicio=cc.p(
+		/*var inicio=cc.p(
 			(LA.size.width - (this._mapa.getMapSize().width)*this._mapa.getTileSize().width) /2,
 			0
 		);
-		this._mapa.setPosition(this._inicio);
+		this._mapa.setPosition(inicio);*/
+		
+		//Algoritmo mágico para escalar el mapa al tamaño correcto para mostrarlo a donde lo querramos mostrar
+		rectanguloVisor= (typeof rectanguloVisor !== "undefined" && rectanguloVisor !== null) ? rectanguloVisor : cc.rect(0, 0, LA.size.width, LA.size.height);//Si no nos dicen donde, usamos toda la pantalla
 
+		var mapSize= this._mapa.getMapSize();
 
+		//mapSize.width++;
+		//mapSize.height++;
+		
+		mapSize.width*=this._mapa.getTileSize().width;
+		mapSize.height*=this._mapa.getTileSize().height;
+		
+		var ratioM = mapSize.width/mapSize.height;
+		var ratioR = rectanguloVisor.width/rectanguloVisor.height;
+		
+		var escalaW = 1;
+		var escalaH = 1;
+		
+		if(ratioM===ratioR){//Si el mapa y el área donde queremos mostrarlo tienen la misma relación de aspecto
+			escalaW = (mapSize.width<rectanguloVisor.width) ? mapSize.width/rectanguloVisor.width : rectanguloVisor.width/mapSize.width;//Encontramos el coeficiente para igualar el ancho del mapa al ancho del visor (siendo que tienen la misma relación de aspecto, podríamos haber usado la altura y daría lo mismo)
+			escalaH = escalaW;
+		}else if(ratioM>ratioR){//Sino, si el mapa es mas achatado horizontalmente que el visor
+			escalaW = (mapSize.width<rectanguloVisor.width) ? mapSize.width/rectanguloVisor.width : rectanguloVisor.width/mapSize.width;
+			escalaH = escalaW;
+		}else{//Sino, si el mapa es más estirado verticalmente que el visor
+			escalaH = (mapSize.height<rectanguloVisor.height) ? mapSize.height/rectanguloVisor.height : rectanguloVisor.height/mapSize.height;
+			escalaW = escalaH;
+		}//TODO: ver por qué carajo se ve como se ve el mapa 2.. (es un bug, pero está copado)
+		
+		this._mapa.setScale(escalaW, escalaH);
+		
+		var inicio = cc.p(
+			rectanguloVisor.x + (rectanguloVisor.width - mapSize.width*escalaW)/2,
+			rectanguloVisor.y + (rectanguloVisor.height - mapSize.height*escalaH)/2
+		);		
+		this._mapa.setPosition(inicio);		
+		
+		this.addChild(this._mapa, 0);
+
+		//creamos y posicionamos el personaje y el "portal":
 		this._paredes = this._mapa.getLayer("paredes");
 		this._portal = this._mapa.getLayer("portal");
 
@@ -348,6 +383,8 @@ LA.Escenas.SceJuego = cc.Scene.extend({
         LA.size = cc.Director.getInstance().getWinSize();//TODO: verificar si no debería estar usando Design Resolution Size en realidad..
         LA.cw = LA.size.width/2;
         LA.ch = LA.size.height/2;
+        
+        this.addChild(cc.LayerColor.create(cc.c4b(180,180,180,255), LA.size.width, LA.size.height));
         
         var layJuego = new LA.Capas.LayJuego();
         layJuego.init();
