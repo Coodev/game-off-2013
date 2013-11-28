@@ -1,6 +1,6 @@
 {
 	"ui": {
-    "font_size":24,
+    "font_size":18,
   },
   
 	"jshint": {

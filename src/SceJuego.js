@@ -7,12 +7,21 @@
 /*global s_res*/
 /* ^Declaraciones para JSHint--------------------------------------------- */
 
-/** Programado por Sebastián R. Vansteenkiste. Otros autores y derechos serán cargados luego. **/
+/** Created by Sebastián R. Vansteenkiste. See "Readme.md" for more information **/
 var LA = LA || {};
-LA.Escenas = LA.Escenas || {};
-LA.Capas = LA.Capas || {};
+LA.Escenas = LA.Escenas || {}; //TODO: revisar si vale la pena dividir así..
+LA.Capas = LA.Capas || {}; //TODO: revisar si vale la pena dividir así..
+LA.Sesion = {};
 
-LA.nivelActual = 1;
+//Animación de sacudida para cuando se intenta mover en una dirección inválida:
+LA.Animaciones = {};
+LA.Animaciones.actSacudir = cc.Sequence.create(
+	cc.MoveBy.create(0.1, cc.p(10, 0)),
+	cc.MoveBy.create(0.1, cc.p(0, -10)),
+	cc.MoveBy.create(0.1, cc.p(-10, 0)),
+	cc.MoveBy.create(0.1, cc.p(0, 10))
+);//TODO: mover esto a donde tenga más sentido
+LA.Animaciones.actSacudir = cc.EaseElasticOut.create(LA.Animaciones.actSacudir, 0.4);
 
 var delay = 0.01;
 
@@ -29,9 +38,12 @@ LA.Capas.LayJuego = cc.Layer.extend({
         var eso = this;
         this._super();      
 		
-		this.initTiledMap(s_res.arrNiveles[LA.nivelActual]);
+		LA.Sesion.nivelActual = 0;
+		LA.Sesion.arrPuntajes = [];
 		
-		this.initControles();
+		this.initTiledMap(s_res.arrNiveles[LA.Sesion.nivelActual]);
+		
+		this.initControles();		
 		
         this.setTouchEnabled(true);
         
@@ -86,8 +98,8 @@ LA.Capas.LayJuego = cc.Layer.extend({
 		this._mapa.setScale(escalaW, escalaH);
 		
 		var inicio = cc.p(
-			rectanguloVisor.x + (rectanguloVisor.width - mapSize.width*escalaW)/2,
-			rectanguloVisor.y + (rectanguloVisor.height - mapSize.height*escalaH)/2
+			Math.floor(rectanguloVisor.x + (rectanguloVisor.width - mapSize.width*escalaW)/2),
+			Math.floor(rectanguloVisor.y + (rectanguloVisor.height - mapSize.height*escalaH)/2)
 		);		
 		this._mapa.setPosition(inicio);		
 		
@@ -109,8 +121,8 @@ LA.Capas.LayJuego = cc.Layer.extend({
     },
     
     initControles: function(){
-		var eso = this;
-
+		var eso = this;		        
+        
 		//menú al cual se deben agregar los menu items
 		var mControles = cc.Menu.create();
 		mControles.setPosition(cc.p(0,0));
@@ -128,9 +140,11 @@ LA.Capas.LayJuego = cc.Layer.extend({
 
 				if (posicion.y < ((eso._mapa.getMapSize().height-1) * eso._mapa.getTileSize().height)){
 			        posicion.y+= eso._mapa.getTileSize().height;
-			        cc.log("X:"+posicion.x+"; Y:"+posicion.y);
+			        //cc.log("X:"+posicion.x+"; Y:"+posicion.y);
 
 					this.moverPersonaje(posicion);
+			    }else{
+					this._personaje.runAction(LA.Animaciones.actSacudir.clone());
 			    }
 
 				this.swappear(this.btnArriba);	
@@ -155,9 +169,11 @@ LA.Capas.LayJuego = cc.Layer.extend({
 				if (posicion.y > eso._mapa.getTileSize().height){
 			        posicion.y-= eso._mapa.getTileSize().height;
 
-					this.moverPersonaje(posicion);
+					this.moverPersonaje(posicion);					
+			    }else{
+					this._personaje.runAction(LA.Animaciones.actSacudir.clone());
 			    }
-				
+
 				this.swappear(this.btnAbajo);
 			},
 			
@@ -181,6 +197,8 @@ LA.Capas.LayJuego = cc.Layer.extend({
 			        posicion.x+= eso._mapa.getTileSize().width;
 			        
 					this.moverPersonaje(posicion);
+			    }else{
+					this._personaje.runAction(LA.Animaciones.actSacudir.clone());
 			    }
 				
 				this.swappear(this.btnDerecha);
@@ -206,6 +224,8 @@ LA.Capas.LayJuego = cc.Layer.extend({
 			        posicion.x-= eso._mapa.getTileSize().width;	        
 					
 					this.moverPersonaje(posicion);	        
+			    }else{
+					this._personaje.runAction(LA.Animaciones.actSacudir.clone());
 			    }
 
 				this.swappear(this.btnIzquierda);
@@ -234,6 +254,11 @@ LA.Capas.LayJuego = cc.Layer.extend({
 		this.btnDerecha.slot=cc.KEY.d;
 		this.btnIzquierda.slot=cc.KEY.a;
 		
+		this.btnArriba.pFinal=cc.p(66, 66);
+		this.btnAbajo.pFinal=cc.p(66, 1);
+		this.btnDerecha.pFinal=cc.p(131, 1);
+		this.btnIzquierda.pFinal=cc.p(1, 1);
+		
     },
     
     getCoord:function(posicion){
@@ -249,44 +274,45 @@ LA.Capas.LayJuego = cc.Layer.extend({
 				if(this._portal.getTileGIDAt(this.getCoord(posicion))){
 					//var optimo = this._mapa.getProperty("optimo");
 					var optimo; //TODO: estar atento a cuando arreglen esto
-					switch(LA.nivelActual){						
-						case 1:
+					switch(LA.Sesion.nivelActual){						
+						case 0:
 							optimo= 5;
 							break;
 						
-						case 2:
+						case 1:
 							optimo= 7;
+							break;
+						
+						case 2:
+							optimo= 9;
 							break;
 						
 						case 3:
 							optimo= 9;
 							break;
-						
-						case 4:
-							optimo= 9;
-							break;
 							
-						case 5:
+						case 4:
 							optimo= 15;
 							break;
 							
-						case 6:
+						case 5:
 							optimo= 19;
 							break;
 							
-						case 7:
+						case 6:
 							optimo= 43;
 							break;
 							
-						case 8:
+						case 7:
 							optimo= 29;
 							break;
 							
-						case 9:
+						case 8:
 							optimo= 75;
 							break;
 					}
-					var iEstrellas = Math.floor((optimo/this._movidas)*5);
+					var iEstrellas = Math.floor((optimo/this._movidas)*(5 /*+ LA.Sesion.nivelActual*/));
+					LA.Sesion.arrPuntajes.push(iEstrellas);
 					var estrellas = "";
 					var i;
 					for(i=0; i<iEstrellas; i++){
@@ -295,9 +321,9 @@ LA.Capas.LayJuego = cc.Layer.extend({
 					if(estrellas===""){
 						estrellas="*";
 					}
-					var mensaje = "¡Ganaste en " +this._movidas+" movidas!\n";
+					var mensaje = LA.Textos.ganaste +this._movidas+LA.Textos.movidas;
 					if(optimo<this._movidas){
-						mensaje+="¡Lo óptimo hubieran sido "+optimo+" movimientos!\n";
+						mensaje+=LA.Textos.optimo+optimo+LA.Textos.movidas;
 					}
 					mensaje+=estrellas;
 					alert(mensaje);
@@ -306,17 +332,33 @@ LA.Capas.LayJuego = cc.Layer.extend({
 					this._mapa.removeFromParent(true);
 					this._personaje.removeFromParent(true);
 					
-					if(LA.nivelActual<s_res.arrNiveles.length-1){
+					if(LA.Sesion.nivelActual<s_res.arrNiveles.length-1){
 						this.resetearControles();
-						LA.nivelActual++;
-						this.initTiledMap(s_res.arrNiveles[LA.nivelActual]);						
+						LA.Sesion.nivelActual++;
+						this.initTiledMap(s_res.arrNiveles[LA.Sesion.nivelActual]);						
 						//TODO: aplicar alguna transición?
 					}else{
-						//TODO: mostrar escena final
-						alert("fin! gracias por jugar!");
+						//TODO: mostrar escena final?
+						iEstrellas=0;
+						estrellas="";
+						for(i=0; i<LA.Sesion.arrPuntajes.length; i++){
+							iEstrellas+=LA.Sesion.arrPuntajes[i];
+						}
+						for(i=0; i<iEstrellas; i++){
+							estrellas+="*";
+						}
+						if(estrellas===""){
+							estrellas="*";
+						}
+						alert(LA.Textos.graciasPorJugar+estrellas+LA.Textos.excusas);
 						this.removeAllChildren(true);
+						if(confirm(LA.Textos.deNuevo)){
+							this.init();
+						}
 					}
 				}
+	        }else{//Sino, es que hay una pared y no podemos movernos, así que damos feedback visual sacudiendo el personaje
+				this._personaje.runAction(LA.Animaciones.actSacudir.clone());
 	        }
     },
     
@@ -329,10 +371,18 @@ LA.Capas.LayJuego = cc.Layer.extend({
 			boton.slot= this._ultimo.slot;
 			this._ultimo.slot = temp;
 			
+			//primero detenemos las animaciones que puedan estar sucediendo (pasan cosas feas si le decís a algo que se mueva cuando ya se está moviendo por alguna razón) //TODO: probar si lo mismo pasa al usar MoveBy
+			boton.stopAllActions();
+			this._ultimo.stopAllActions();
+			
 			//swappeamos de lugar este botón y el anterior presionado
-			temp = boton.getPosition();
-			boton.runAction(cc.MoveTo.create(0.2, this._ultimo.getPosition()));//TODO: solucionar caso en que si se presiona una dirección mientras su botón se está moviendo se toma esa posición en lugar de la final T_T
+			temp = boton.pFinal;
+			boton.runAction(cc.MoveTo.create(0.2, this._ultimo.pFinal));//TODO: solucionar caso en que si se presiona una dirección mientras su botón se está moviendo se toma esa posición en lugar de la final T_T
 			this._ultimo.runAction(cc.MoveTo.create(0.2, temp));
+			
+			boton.pFinal= this._ultimo.pFinal;
+			this._ultimo.pFinal=temp;
+			
 			this._ultimo=boton;
 		}
     },
@@ -380,14 +430,17 @@ LA.Escenas.SceJuego = cc.Scene.extend({
     onEnter:function () {
         this._super();
         
-        LA.size = cc.Director.getInstance().getWinSize();//TODO: verificar si no debería estar usando Design Resolution Size en realidad..
-        LA.cw = LA.size.width/2;
-        LA.ch = LA.size.height/2;
+        //TODO: mover estas declaraciones a main?
+        //LA.size = cc.Director.getInstance().getWinSize();//TODO: verificar si no debería estar usando Design Resolution Size en realidad..
+        //LA.cw = LA.size.width/2;
+        //LA.ch = LA.size.height/2;        
         
         this.addChild(cc.LayerColor.create(cc.c4b(180,180,180,255), LA.size.width, LA.size.height));
         
         var layJuego = new LA.Capas.LayJuego();
         layJuego.init();
         this.addChild(layJuego);
+        
+        alert(LA.Textos.bienvenido);
     }
 });

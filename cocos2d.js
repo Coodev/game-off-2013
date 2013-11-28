@@ -3,7 +3,7 @@
 
 /*global cc*/
 
-/** Programado por Sebastián R. Vansteenkiste. Otros autores y derechos serán cargados luego. **/
+/** Created by Sebastián R. Vansteenkiste. See "Readme.md" for more information **/
 
 (function () {
     var d = document;
@@ -21,9 +21,11 @@
         //SingleEngineFile:'',
         appFiles:[
             'src/resource.js',
+            'txt/en.js',
+            'txt/es.js',
             /*'src/SceFin.js',*/
-            'src/SceJuego.js'/*,
-            'src/SceInicial.js'*/
+            'src/SceJuego.js',
+            'src/SceInicial.js'
         ]
     };
 

@@ -6,41 +6,38 @@ var s_res = {};
 var g_res= [];
 
 //logo de la animacion inicial
-//s_res.logo = "logo.png";
-//g_res.push({src:s_res.logo});
+s_res.logo = "logo.png";
+g_res.push({type:"image", src:s_res.logo});
 
 //TMX:
 s_res.arrNiveles=[];
 
-s_res.arrNiveles.push("nivel0.tmx");
+s_res.arrNiveles.push("nivel01.tmx");
 g_res.push({type:"tmx", src:s_res.arrNiveles[0]});
 
-s_res.arrNiveles.push("nivel01.tmx");
+s_res.arrNiveles.push("nivel02.tmx");
 g_res.push({type:"tmx", src:s_res.arrNiveles[1]});
 
-s_res.arrNiveles.push("nivel02.tmx");
+s_res.arrNiveles.push("nivel03.tmx");
 g_res.push({type:"tmx", src:s_res.arrNiveles[2]});
 
-s_res.arrNiveles.push("nivel03.tmx");
+s_res.arrNiveles.push("nivel04.tmx");
 g_res.push({type:"tmx", src:s_res.arrNiveles[3]});
 
-s_res.arrNiveles.push("nivel04.tmx");
+s_res.arrNiveles.push("nivel05.tmx");
 g_res.push({type:"tmx", src:s_res.arrNiveles[4]});
 
-s_res.arrNiveles.push("nivel05.tmx");
+s_res.arrNiveles.push("nivel06.tmx");
 g_res.push({type:"tmx", src:s_res.arrNiveles[5]});
 
-s_res.arrNiveles.push("nivel06.tmx");
+s_res.arrNiveles.push("nivel07.tmx");
 g_res.push({type:"tmx", src:s_res.arrNiveles[6]});
 
-s_res.arrNiveles.push("nivel07.tmx");
+s_res.arrNiveles.push("nivel08.tmx");
 g_res.push({type:"tmx", src:s_res.arrNiveles[7]});
 
-s_res.arrNiveles.push("nivel08.tmx");
-g_res.push({type:"tmx", src:s_res.arrNiveles[8]});
-
 s_res.arrNiveles.push("nivel09.tmx");
-g_res.push({type:"tmx", src:s_res.arrNiveles[9]});
+g_res.push({type:"tmx", src:s_res.arrNiveles[8]});
 
 //Elementos del Mapa:
 s_res.imgPiso = "piso.png";
@@ -85,17 +82,5 @@ s_res.btnIzquierdaActivo = "btnIzquierdaActivo.png";
 g_res.push({type:"image", src:s_res.btnIzquierdaActivo});
 
 //misceláneos
-/*s_res.mscAgradecimientos = "mscAgradecimientos.png";
+s_res.mscAgradecimientos = "mscAgradecimientos.png";
 g_res.push({src:s_res.mscAgradecimientos});
-s_res.mscLapiz = "mscLapiz.png";
-g_res.push({src:s_res.mscLapiz});
-s_res.mscLogo = "mscLogo.png";
-g_res.push({src:s_res.mscLogo});
-s_res.mscTipito = "mscTipito.png";
-g_res.push({src:s_res.mscTipito});*/
-
-//fuentes
-//s_res.fntFedra = "FedraSansStd Normal.ttf";
-//g_res.push({fontName:"FedraSansStd Normal", src:s_res.fntFedra, type:"truetype"});
-//s_res.fntFedraBold = "FedraSansStd Bold.ttf";
-//g_res.push({fontName:"FedraSansStd Bold", src:s_res.fntFedraBold, type:"truetype"});

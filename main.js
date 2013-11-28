@@ -7,7 +7,7 @@
 /*global g_res*/
 /* ^Declaraciones para JSHint--------------------------------------------- */
 
-/** Programado por Sebastián R. Vansteenkiste. Otros autores y derechos serán cargados luego. **/
+/** Created by Sebastián R. Vansteenkiste. See "Readme.md" for more information **/
 
 /* Declaraciones de Constantes */
 
@@ -18,6 +18,8 @@ LA.Sprites = LA.Sprites || {};
 
 LA.Mapas = LA.Mapas || {};
 
+LA.Textos= LA.Textos || {};
+LA.arrTextos= LA.arrTextos || [];
 /* FIN Declaraciones de Constantes */
 
 /* Funciones Auxiliares */
@@ -54,8 +56,6 @@ var cocos2dApp = cc.Application.extend({
 		var designSize = cc.size(800, 450);
 		//var designSize = cc.size(450, 800);
 
-
-
         var searchPaths = [];
         var resDirOrders = [];
 
@@ -68,7 +68,6 @@ var cocos2dApp = cc.Application.extend({
         
 		cc.FileUtils.getInstance().setSearchResolutionsOrder(resDirOrders);
 
-
         director.setContentScaleFactor(resourceSize.width / designSize.width);
 
         cc.EGLView.getInstance().setDesignResolutionSize(designSize.width, designSize.height, cc.RESOLUTION_POLICY.SHOW_ALL);
@@ -78,6 +77,22 @@ var cocos2dApp = cc.Application.extend({
 
         //load resources
         cc.LoaderScene.preload(g_res, function () {
+			//TODO: en realidad esto debería (o podría) ir en otro lado, ya que no estoy cargando los textos como recursos sino como archivos de fuente del juego..
+			var idiomaLargo = window.navigator.language;
+            var idioma;
+	        if(idiomaLargo){
+	            idioma = idiomaLargo.substring(0,2);
+	        } else {
+	            idioma = "en"; //Si hubo un error, tomamos inglés por defecto
+	        }
+			
+			if(typeof LA.arrTextos[idioma] !== "undefined" && LA.arrTextos[idioma] !== null){
+				LA.Textos=LA.arrTextos[idioma];
+			}else{
+				LA.Textos=LA.arrTextos["en"];
+			}
+			
+			//Terminada la carga, arranca nomás..
             director.replaceScene(new this.startScene());
         }, this);
 
@@ -85,4 +100,4 @@ var cocos2dApp = cc.Application.extend({
     }
 });
 
-var myApp = new cocos2dApp(LA.Escenas.SceJuego);
+var myApp = new cocos2dApp(LA.Escenas.SceInicial);
