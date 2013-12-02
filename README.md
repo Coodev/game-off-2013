@@ -15,7 +15,7 @@ http://proto.heart-bit.com.ar/laberinto
 Either mouse click / touch on the directional buttons on screen or use the keyboard's arrows or WASD.
 
 ## About
-It's entirely made with JavaScript using the open source framework Cocos2D-HTML5 (and the source I provide here requires it to be downloaded separately to work):
+It's entirely made with JavaScript using the open source framework Cocos2D-HTML5 (I've added a minified version of the v2.2.1 engine in the game folder so the source can be tested without having to download it separately -I don't think that breaks any licenses or anything-):
 https://github.com/cocos2d/cocos2d-html5/
 
 The bulk of the coding was made on the open source editor Scripted:
